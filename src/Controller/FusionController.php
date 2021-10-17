@@ -5,11 +5,11 @@ namespace App\Controller;
 use League\Csv\Exception;
 use League\Csv\Reader;
 use League\Csv\Writer;
-
-use SplFileObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FusionController extends AbstractController
 {
@@ -96,6 +96,21 @@ class FusionController extends AbstractController
         return $this->render('/fusion/read.html.twig', array(
             'records' => $records,
         ));
+    }
+
+
+    /**
+     * @Route("/download",name="download")
+     */
+    public function download(): BinaryFileResponse
+    {
+        $response = new BinaryFileResponse('../public/csv/output.csv');
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'fusion.csv'
+        );
+        return $response;
     }
 }
 
