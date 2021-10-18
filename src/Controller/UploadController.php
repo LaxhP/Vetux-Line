@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 class UploadController extends AbstractController
 {
     /**
-     * @Route("/upload")
+     * @Route("/upload", name="upload")
      */
     public function index(): Response
     {
