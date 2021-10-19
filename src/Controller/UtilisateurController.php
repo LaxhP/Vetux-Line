@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/utilisateur')]
 class UtilisateurController extends AbstractController
 {
-    #[Route('/', name: 'utilisateur_index', methods: ['GET'])]
+    #[Route('/user_index', name: 'utilisateur_index', methods: ['GET'])]
     public function index(UtilisateurRepository $utilisateurRepository): Response
     {
         return $this->render('utilisateur/index.html.twig', [
@@ -35,10 +35,12 @@ class UtilisateurController extends AbstractController
 
             $utilisateur->setPassword(
                 $passwordHasher->hashPassword($utilisateur, $utilisateur->getPassword()));
+            $role = ['ROLE_GESTION'];
+            $utilisateur->setRoles($role);
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
-            return $this->redirectToRoute('utilisateur_index');
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('utilisateur/new.html.twig', [

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Service\FusionClass;
 
 class FusionController extends AbstractController
 {
@@ -32,7 +33,7 @@ class FusionController extends AbstractController
      * @Route ("/readcsv", name="readcsv")
      * @throws Exception
      */
-    public function read()
+    public function read(FusionClass $fusion )
     {
         //$source="/home/laupa/Vidéos/Vetux-Line/Vetux/Vetux-Line/csvFile/";
         $file='../var/uploads/file1.csv'  ;
@@ -41,41 +42,19 @@ class FusionController extends AbstractController
         $header = $csv->getHeader(); //returns the CSV header record
         $records = $csv->getRecords(); //returns all the CSV records as an Iterator object
         $output = Writer::createFromPath('../public/csv/output.csv');
-        //$tabName = ["Gender", "GivenName","Surname","Birthday","StreetAddress","Title","EmailAddress","TelephoneNumber","Kilograms","CCType","CCNumber","CVV2","CCExpires","Vehicle"];
-          $tabName = ["Gender", "GivenName","Surname","Birthday","StreetAddress","EmailAddress","Centimeters","FeetInches"];
+        $tabName = ["Gender", "GivenName","Surname","Birthday","StreetAddress","Title","EmailAddress","TelephoneNumber","Kilograms","CCType","CCNumber","CVV2","CCExpires","Vehicle"];
+        //  $tabName = ["Gender", "GivenName","Surname","Birthday","StreetAddress","EmailAddress","Centimeters","FeetInches"];
         $output->insertOne($tabName);//0,
-        $carte=[];
 
 
-        foreach ($records as $record) {
-
-            for ( $i=0; $i<count($tabName);$i++) {
-                $para = $tabName[$i];
-                $tab[$i] = $record[$para];
-
-            }
-            $t=$record["FeetInches"];
-            $tb= explode("'", $t);
-            $boo=((int)$tb[0]+((int)$tb[1]/10))*30.48;
-            $bo =($boo-2 <= $record['Centimeters']  &&  $boo+2 >= $record['Centimeters']);
-
-            $t=$record["Birthday"];
-            $tb= explode("/", $t);
-            $bo= $bo && ((int)$tb[2]<=2003);
-
-            $ccn=$record["CCNumber"];
+        $fusion->fusion($records,$output,$tabName);
 
 
-            if((!in_array($ccn,$carte) )) {
-                array_push($carte, $ccn);
-                if($bo)
-                $output->insertOne($tab);
-            }
-        }
+
 
 
         return $this->render('/fusion/read.html.twig', array(
-            'records' => $records,'header'=>$header ,"boo"=>$boo
+            'records' => $records,'header'=>$header
         ));
     }
 

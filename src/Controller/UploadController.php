@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\FileUploader;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 
 class UploadController extends AbstractController
@@ -15,11 +16,20 @@ class UploadController extends AbstractController
     /**
      * @Route("/upload", name="upload")
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return $this->render('upload/index.html.twig', [
-            'controller_name' => 'UploadController',
-        ]);
+
+        $role=$this->getUser()->getRoles();
+        $this->denyAccessUnlessGranted('ROLE_GESTION');
+        $hasAccess=$this->isGranted("ROLE_GESTION");
+        if  ($hasAccess){
+            return $this->render('upload/index.html.twig', [
+                'controller_name' => 'UploadController',
+            ]);
+        }
+        else{
+            return $this->render('notallow.html.twig',['role'=>$role[0]]);
+        }
     }
 
     /**
