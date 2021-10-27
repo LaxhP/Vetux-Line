@@ -29,51 +29,30 @@ class FusionController extends AbstractController
 
 
 //Number,Gender,NameSet,Title,GivenName,MiddleInitial,Surname,StreetAddress,City,State,StateFull,ZipCode,Country,CountryFull,EmailAddress,Username,Password,BrowserUserAgent,TelephoneNumber,TelephoneCountryCode,MothersMaiden,Birthday,TropicalZodiac,CCType,CCNumber,CVV2,CCExpires,NationalID,UPS,WesternUnionMTCN,MoneyGramMTCN,Color,Occupation,Company,Vehicle,Domain,BloodType,Pounds,Kilograms,FeetInches,Centimeters,Latitude,Longitude
+
     /**
      * @Route ("/readcsv", name="readcsv")
      * @throws Exception
      */
-    public function read(FusionClass $fusion )
+    public function read(FusionClass $fusion)
     {
         //$source="/home/laupa/Vidéos/Vetux-Line/Vetux/Vetux-Line/csvFile/";
-        $file='../var/uploads/file1.csv'  ;
-        $csv = Reader::createFromPath($file, 'r');
-        $csv->setHeaderOffset(0);
-        $header = $csv->getHeader(); //returns the CSV header record
-        $records = $csv->getRecords(); //returns all the CSV records as an Iterator object
+        $file2 = '../var/uploads/file2.csv';
+        $file1 = '../var/uploads/file1.csv';
+        $csv2 = Reader::createFromPath($file2, 'r');
+        $csv1 = Reader::createFromPath($file1, 'r');
+        $csv2->setHeaderOffset(0);
+        $csv1->setHeaderOffset(0);
+        $header = $csv1->getHeader(); //returns the CSV header record
+        $records1 = $csv1->getRecords(); //returns all the CSV records as an Iterator object
+        $records2 = $csv2->getRecords(); //returns all the CSV records as an Iterator object
         $output = Writer::createFromPath('../public/csv/output.csv');
-        $tabName = ["Gender", "GivenName","Surname","Birthday","StreetAddress","Title","EmailAddress","TelephoneNumber","Kilograms","CCType","CCNumber","CVV2","CCExpires","Vehicle"];
-        //  $tabName = ["Gender", "GivenName","Surname","Birthday","StreetAddress","EmailAddress","Centimeters","FeetInches"];
-        $output->insertOne($tabName);//0,
-
-
-        $fusion->fusion($records,$output,$tabName);
-
-
-
-
+        $tabName = ["Number", "GivenName", "Surname", "Birthday", "StreetAddress", 'NameSet', "EmailAddress", "TelephoneNumber", "Kilograms", "CCType", "CCNumber", "CVV2", "CCExpires", "Vehicle"];
+        $output->insertOne($tabName);
+        $fusion->melange(false, $records1, $records2, $tabName, $output);
 
         return $this->render('/fusion/read.html.twig', array(
-            'records' => $records,'header'=>$header
-        ));
-    }
-
-
-
-
-    /**
-     * @Route ("/sel")
-     */
-    public function selesct()
-    {
-        $source="/home/laupa/Vidéos/Vetux-Line/Vetux/Vetux-Line/csvFile/";
-        $csv = Reader::createFromPath($source . 'french-data.csv', 'r');
-        $csv->setHeaderOffset(0);
-        $records = $csv->getRecords(); //returns all the CSV records as an Iterator object
-
-
-        return $this->render('/fusion/read.html.twig', array(
-            'records' => $records,
+            'records' => $records1, 'header' => $header
         ));
     }
 

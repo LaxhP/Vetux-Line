@@ -4,37 +4,69 @@ namespace App\Service;
 
 use Iterator;
 use League\Csv\Writer;
-use PhpParser\Node\Expr\Array_;
 
 class FusionClass
 {
-    public function fusion(Iterator $records, Writer $output, Array $tabName ){
-        $carte=[];
-        foreach ($records as $record) {
+    public function fusion(bool $type, Iterator $records, array $tabName, Writer $output)
+    {
+        $total = [];
+        $tab = [];
+        foreach ($records as $record1) {
+            if ($this->filtre($record1)) {
+                for ($i = 0; $i < count($tabName); $i++) {
+                    $para = $tabName[$i];
+                    $tab[$para] = $record1[$para];
+                }
 
-            for ( $i=0; $i<count($tabName);$i++) {
-                $para = $tabName[$i];
-                $tab[$i] = $record[$para];
+                if ($type)
+                    $output->insertOne($tab);
+                else
+                    $total[] = $tab;
 
             }
-            $t=$record["FeetInches"];
-            $tb= explode("'", $t);
-            $boo=((int)$tb[0]+((int)$tb[1]/10))*30.48;
-            $bo =($boo-2 <= $record['Centimeters']  &&  $boo+2 >= $record['Centimeters']);
-
-            $t=$record["Birthday"];
-            $tb= explode("/", $t);
-            $bo= $bo && ((int)$tb[2]<=2003);
-
-            $ccn=$record["CCNumber"];
+        }
+        return $total;
+    }
 
 
-            if((!in_array($ccn,$carte) )) {
-                array_push($carte, $ccn);
-                if($bo)
-                    $output->insertOne($tab);
+    public function filtre(array $record)
+    {
+        $carte = [];
+        $t = $record["FeetInches"];
+        $tb = explode("'", $t);
+        $comv = ((int)$tb[0] + ((int)$tb[1] / 10)) * 30.48;
+        $bool = ((int)$comv - 1 <= $record["Centimeters"]) && ((int)$comv + 1 >= $record["Centimeters"]);
+        if ($bool) {
+            $t = $record["Birthday"];
+            $tb = explode("/", $t);
+            if (((int)$tb[2] <= (date('Y') - 18))) {
+                $ccn = $record["CCNumber"];
+                if ((!in_array($ccn, $carte))) {
+                    array_push($carte, $ccn);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public function melange(bool $type, Iterator $array1, Iterator $array2, array $tabname, Writer $output)
+    {
+        $array12 = $this->fusion($type, $array1, $tabname, $output);
+        $array22 = $this->fusion($type, $array2, $tabname, $output);
+        if (!$type) {
+            $i = 0;
+            $sizemax = count($array12) + count($array22);
+            while ($i < $sizemax) {
+                if ($i < count($array22))
+                    $output->insertOne($array22[$i]);
+                if ($i < count($array12))
+                    $output->insertOne($array12[$i]);
+                $i++;
             }
         }
     }
+
 
 }
