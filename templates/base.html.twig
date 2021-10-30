@@ -12,7 +12,7 @@
     <a class="navbar-brand">Vetux-Line</a>
     {% if app.user %}
         <div>
-            Bonjour {{ app.user.username }} <a class="btn btn-sm btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
+            Bonjour {{ app.user.userIdentifier }} <a class="btn btn-sm btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
         </div>
     {% else %}
         <div>

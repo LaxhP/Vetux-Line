@@ -49,7 +49,7 @@ class FusionController extends AbstractController
         $output = Writer::createFromPath('../public/csv/output.csv');
         $tabName = ["Number", "GivenName", "Surname", "Birthday", "StreetAddress", 'NameSet', "EmailAddress", "TelephoneNumber", "Kilograms", "CCType", "CCNumber", "CVV2", "CCExpires", "Vehicle"];
         $output->insertOne($tabName);
-        $fusion->melange(false, $records1, $records2, $tabName, $output);
+        $fusion->melange(true, $records1, $records2, $tabName, $output);
 
         return $this->render('/fusion/read.html.twig', array(
             'records' => $records1, 'header' => $header

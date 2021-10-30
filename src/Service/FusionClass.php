@@ -66,6 +66,9 @@ class FusionClass
                 $i++;
             }
         }
+        else{
+
+        }
     }
 
 
