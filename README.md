@@ -1,5 +1,8 @@
 # Vetux-Line
 
+Lien github: https://github.com/LaxhP/Vetux-Line
+Equipe:Laxhan PUSHPAKUMAR, Jessy LAUPA
+
 ##Contexte
 Nous travaillons pour l'entreprise Vetux-Line, un createur de ligne de vêtements.
 Notre mission consiste à créer une application Web qui permet de manipuler des fichiers CSV.
@@ -116,5 +119,34 @@ Lorsque le programme aura fini  d'executer la fonction fusion, il nous rediriger
 ##Partie 2
 Dans la Partie 2, nous devions mettre les données des clients, les véhicules en particulier, dans une base de données. 
 ![](/public/img/base.PNG "schema base de donnée")
+Nous avons réaliser plusieurs lien ManyToOne
+```php
+/**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Vehicule", inversedBy="client")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private Vehicule $vehicule;
+```
+Cela permet de relier plusieurs tables entre elles.
+Nous avons d'utiliser les méthodes d'injections SQL dans une classe en dehors du controller comme pour la fusion.
+On récupère le fichier fusionné directement dans le serveur, puis on récupère les parties qui nous intèresse pour le rentre dans la base de données.
+Le fonctionnement n'est pas optimisé on aurait du faire un bouton ou une redirection vers la route `etl`. Il manque aussi la partie ou on doit afficher les statisitiques.
+```php
+$voiture=explode(" ", $pers["Vehicle"]);
+
+            $marque = new Marque();
+            $marque->setNom($voiture[1]);
+
+            $vehicule = new Vehicule();
+            $vehicule->setAnnee($voiture[0]);
+            $vehicule->setModele($voiture[2]);
+            $vehicule->setMarque($marque);
+
+            $client = new Client();
+            $client->setNom($pers["Surname"]);
+            $client->setPrenom($pers["GivenName"]);
+            $client->setVehicule($vehicule);
+```
+Nous avons fait en sorte qu'il n'y ai une marque qu'une seules fois dans la base de donnée.
 
 
