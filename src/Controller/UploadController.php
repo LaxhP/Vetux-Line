@@ -20,7 +20,6 @@ class UploadController extends AbstractController
     {
 
         $role=$this->getUser()->getRoles();
-        $this->denyAccessUnlessGranted('ROLE_GESTION');
         $hasAccess=$this->isGranted("ROLE_GESTION");
         if  ($hasAccess){
             return $this->render('upload/index.html.twig', [

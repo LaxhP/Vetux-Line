@@ -34,7 +34,7 @@ class FusionController extends AbstractController
      * @Route ("/readcsv", name="readcsv")
      * @throws Exception
      */
-    public function read(FusionClass $fusion)
+    public function fusion(FusionClass $fusion)
     {
         //$source="/home/laupa/Vidéos/Vetux-Line/Vetux/Vetux-Line/csvFile/";
         $file2 = '../var/uploads/file2.csv';
